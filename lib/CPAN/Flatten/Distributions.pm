@@ -25,17 +25,9 @@ sub providing {
     return;
 }
 
-sub without_core {
-    my $self = shift;
-    my $new = (ref $self)->new;
-    shift @$new;
-    $new->add($_) for grep !$_->is_core, @$self;
-    $new;
-}
-
 sub emit {
     my $self = shift;
-    CPAN::Flatten::Distributions::Emitter->emit($self->without_core);
+    CPAN::Flatten::Distributions::Emitter->emit($self);
 }
 
 1;

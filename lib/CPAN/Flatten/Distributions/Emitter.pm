@@ -10,6 +10,7 @@ sub emit {
     my $data = '';
     $data .= "DISTRIBUTIONS\n";
     for my $distribution (@$distributions) {
+        next if $distribution->is_core;
         $data .= "  @{[$distribution->name]}\n";
         $data .= "    pathname: @{[$distribution->distfile]}\n";
 

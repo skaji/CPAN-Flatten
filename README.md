@@ -23,7 +23,7 @@ This is experimental.
 CPAN::Flatten flattens cpan module requirements without install.
 
 As you know, the cpan world allows cpan modules to configure themselves dynamically.
-So actual requirements can not be detemined
+So actual requirements can not be determined
 unless you install them to your local machines.
 
 But, I think dynamic configuration is generally harmful,

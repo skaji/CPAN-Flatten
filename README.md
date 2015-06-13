@@ -4,17 +4,33 @@ CPAN::Flatten - flatten cpan module requirements without install
 
 # SYNOPSIS
 
-    $ perl -Ilib script/flatten Moose
-    -> Searching distribution for Moose, found Moose-2.1405
+    $ perl -Ilib script/flatten Moo
+    -> Searching distribution for Moo, found Moo-2.000001
       -> Searching distribution for Module::Runtime, found Module-Runtime-0.014
         -> Searching distribution for Module::Build, found Module-Build-0.4214
-      -> Searching distribution for Data::OptList, found Data-OptList-0.109
-        -> Searching distribution for Params::Util, found Params-Util-1.07
-        -> Searching distribution for Sub::Install, found Sub-Install-0.928
-      -> Searching distribution for Eval::Closure, found Eval-Closure-0.13
-    ...
+      -> Searching distribution for Class::Method::Modifiers, found Class-Method-Modifiers-2.11
+      -> Searching distribution for Devel::GlobalDestruction, found Devel-GlobalDestruction-0.13
+        -> Searching distribution for Sub::Exporter::Progressive, found Sub-Exporter-Progressive-0.001011
+      -> Searching distribution for Role::Tiny, found Role-Tiny-2.000001
 
-See [https://gist.github.com/shoichikaji/d24d4c790057c62e23e5](https://gist.github.com/shoichikaji/d24d4c790057c62e23e5) for the whole output.
+    H/HA/HAARG/Moo-2.000001.tar.gz
+      runtime_requires
+        Z/ZE/ZEFRAM/Module-Runtime-0.014.tar.gz
+        E/ET/ETHER/Class-Method-Modifiers-2.11.tar.gz
+        H/HA/HAARG/Devel-GlobalDestruction-0.13.tar.gz
+        H/HA/HAARG/Role-Tiny-2.000001.tar.gz
+    Z/ZE/ZEFRAM/Module-Runtime-0.014.tar.gz
+      configure_requires
+        L/LE/LEONT/Module-Build-0.4214.tar.gz
+      build_requires
+        L/LE/LEONT/Module-Build-0.4214.tar.gz
+    L/LE/LEONT/Module-Build-0.4214.tar.gz
+    E/ET/ETHER/Class-Method-Modifiers-2.11.tar.gz
+    H/HA/HAARG/Devel-GlobalDestruction-0.13.tar.gz
+      runtime_requires
+        F/FR/FREW/Sub-Exporter-Progressive-0.001011.tar.gz
+    F/FR/FREW/Sub-Exporter-Progressive-0.001011.tar.gz
+    H/HA/HAARG/Role-Tiny-2.000001.tar.gz
 
 # DESCRIPTION
 

@@ -18,16 +18,24 @@ sub add {
 
 sub providing {
     my ($self, $package, $version) = @_;
-    return 1 if $package eq "perl";
-    for my $distribution (@$self) {
-        return 1 if $distribution->providing($package, $version);
-    }
-    return;
+    $self->providing_distribution($package, $version) ? 1 : 0;
 }
 
 sub emit {
-    my $self = shift;
-    CPAN::Flatten::Distributions::Emitter->emit($self);
+    my ($self, $fh) = @_;
+    CPAN::Flatten::Distributions::Emitter->emit($self, $fh);
+}
+
+sub providing_distribution {
+    my ($self, $package, $version) = @_;
+    if ($package eq "perl") {
+        my ($core) = grep $_->is_core, @$self;
+        return $core;
+    }
+    for my $distribution (@$self) {
+        return $distribution if $distribution->providing($package, $version);
+    }
+    return;
 }
 
 1;

@@ -2,38 +2,48 @@ package CPAN::Flatten::Distributions::Emitter;
 use strict;
 use warnings;
 
-# tweak Carton::Snapshot::Emitter for separating requirements: configure, build, runtime
+sub new {
+    my ($class, %opt) = @_;
+    bless {%opt}, $class;
+}
+
+sub print {
+    my ($self, $indent, $message) = @_;
+    my $fh = $self->{fh};
+    print {$fh} "  " x $indent, $message, "\n";
+}
 
 sub emit {
-    my ($class, $distributions) = @_;
+    my ($self, $distributions, $fh) = @_;
+    $self = $self->new(fh => $fh) unless ref $self;
 
-    my $data = '';
-    $data .= "DISTRIBUTIONS\n";
     for my $distribution (@$distributions) {
         next if $distribution->is_core;
-        $data .= "  @{[$distribution->name]}\n";
-        $data .= "    pathname: @{[$distribution->distfile]}\n";
-
-        $data .= "    provides:\n";
-        for my $provide (@{$distribution->provides}) {
-            $data .= "      $provide->{package} @{[$provide->{version} || 'undef' ]}\n";
-        }
-
+        $self->print(0, $distribution->distfile);
         my %requirements;
         for my $requirement (@{$distribution->requirements}) {
-            push @{$requirements{$requirement->{phase}}}, "$requirement->{package} $requirement->{version}";
+            my $providing = $distributions->providing_distribution(
+                $requirement->{package}, $requirement->{version},
+            );
+            if (!$providing) {
+                warn "missing $requirement->{package}";
+                next;
+            } elsif ($providing->is_core) {
+                next;
+            }
+            push @{$requirements{$requirement->{phase}}}, $providing->distfile;
         }
-        $data .= "    requirements:\n";
+        next unless %requirements;
         for my $phase (qw(configure build runtime)) {
             my $requirements = $requirements{$phase} or next;
-            $data .= "      $phase:\n";
+            $self->print(1, "${phase}_requires");
             for my $requirement (@$requirements) {
-                $data .= "        $requirement\n";
+                $self->print(2, $requirement);
             }
         }
     }
-
-    $data;
 }
+
+
 
 1;

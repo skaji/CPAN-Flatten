@@ -8,8 +8,7 @@ use JSON::PP ();
 use CPAN::Flatten::Distribution;
 
 my $SELF = __PACKAGE__->_new(
-    distfile_url => "http://cpanmetadb.plackperl.org/v1.0/package",
-    provides_url => "https://cpanmetadb-provides.herokuapp.com/v1.0/provides",
+    distfile_url => "https://cpanmetadb-provides.herokuapp.com/v1.1/package",
     requirements_url => "https://api.metacpan.org/release",
     ua => HTTP::Tiny->new(timeout => 10),
 );
@@ -19,15 +18,10 @@ sub from_pacakge {
     my ($class, $package, $version) = @_;
     my $need_reason = wantarray;
 
-    my $distfile = $SELF->fetch_distfile($package, $version);
+    my ($distfile, $provides) = $SELF->fetch_distfile($package, $version);
     if (!$distfile) {
         return unless $need_reason;
         return (undef, "failed to fetch distfile for $package");
-    }
-    my $provides = $SELF->fetch_provides($distfile);
-    if (!$provides) {
-        return unless $need_reason;
-        return (undef, "failed to fetch provides for $distfile");
     }
     my $requirements = $SELF->fetch_requirements($distfile);
     if (!$requirements) {
@@ -53,19 +47,8 @@ sub fetch_distfile {
     return unless $res->{success};
 
     if (my $yaml = CPAN::Meta::YAML->read_string($res->{content})) {
-        my $meta = $yaml->[0];
-        return $meta->{distfile} if $meta && $meta->{distfile};
-    }
-    return;
-}
-
-sub fetch_provides {
-    my ($self, $distfile) = @_;
-    my $res = $self->{ua}->get($self->{provides_url} . "/$distfile");
-    return unless $res->{success};
-    if (my $yaml = CPAN::Meta::YAML->read_string($res->{content})) {
-        my $meta = $yaml->[0];
-        return $meta->{provides} if $meta && $meta->{provides};
+        my $meta = $yaml->[0] or return;
+        return ($meta->{distfile}, $meta->{provides});
     }
     return;
 }

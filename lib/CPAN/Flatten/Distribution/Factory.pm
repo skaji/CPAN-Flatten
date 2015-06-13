@@ -77,7 +77,7 @@ sub fetch_provides {
 sub fetch_requirements {
     my ($self, $distfile) = @_;
     $distfile =~ s{^./../}{};
-    $distfile =~ s{\.(?:tar\.gz|zip|tgz)$}{};
+    $distfile =~ s{\.(?:tar\.gz|zip|tgz|tar\.bz2)$}{};
     my $res = $self->{ua}->get($self->{requirements_url} . "/$distfile");
     return unless $res->{success};
     if (my $json = eval { JSON::PP::decode_json($res->{content}) }) {

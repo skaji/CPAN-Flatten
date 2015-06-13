@@ -46,7 +46,7 @@ sub name {
     return $self->{name} if $self->{name};
     my $distfile = $self->distfile
         or return;
-    if ($distfile =~ m{^./../[^/]+/(.+)\.(?:tar\.gz|zip|tgz)$}) {
+    if ($distfile =~ m{^./../[^/]+/(.+)\.(?:tar\.gz|zip|tgz|tar\.bz2)$}) {
         return $1;
     } else {
         return;

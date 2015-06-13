@@ -1,5 +1,5 @@
 {
-   "abstract" : "flatten cpan module dependencies without install",
+   "abstract" : "flatten cpan module requirements without install",
    "author" : [
       "Shoichi Kaji <skaji@cpan.org>"
    ],

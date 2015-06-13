@@ -7,7 +7,7 @@ use 5.008005;
 use ExtUtils::MakeMaker;
 
 my %WriteMakefileArgs = (
-  "ABSTRACT" => "flatten cpan module dependencies without install",
+  "ABSTRACT" => "flatten cpan module requirements without install",
   "AUTHOR" => "Shoichi Kaji <skaji\@cpan.org>",
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => 0

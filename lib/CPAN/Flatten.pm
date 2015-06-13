@@ -4,42 +4,49 @@ use strict;
 use 5.008_005;
 our $VERSION = '0.01';
 
-use CPAN::Flatten::Artifact::Factory;
-use CPAN::Flatten::Artifacts;
+use CPAN::Flatten::Distribution::Factory;
+use CPAN::Flatten::Distributions;
 
 sub new {
     my ($class, %opt) = @_;
     bless {%opt}, $class;
 }
-sub info {
+
+sub info_progress {
     my ($self, $depth) = (shift, shift);
-    warn "  " x $depth, "-> @_\n";
+    print STDERR "  " x $depth, "-> @_";
+}
+sub info_done {
+    shift;
+    print STDERR ", @_\n";
 }
 
 sub flatten {
     my ($self, $package, $version) = @_;
-    my $artifacts = CPAN::Flatten::Artifacts->new;
+    my $distributions = CPAN::Flatten::Distributions->new;
     my $miss = +{};
     my $depth = 0;
-    $self->_flatten($depth, $miss, $artifacts, $package, $version);
-    wantarray ? ($artifacts, $miss) : $artifacts;
+    $self->_flatten($depth, $miss, $distributions, $package, $version);
+    wantarray ? ($distributions, $miss) : $distributions;
 }
 
 sub _flatten {
-    my ($self, $depth, $miss, $artifacts, $package, $version) = @_;
+    my ($self, $depth, $miss, $distributions, $package, $version) = @_;
     return if $miss->{$package};
-    if (!$artifacts->providing($package, $version)) {
-        $self->info($depth, "Searching artifact of $package");
-        my ($artifact, $reason) = CPAN::Flatten::Artifact::Factory->from_pacakge($package, $version);
-        if (!$artifact) {
+    if (!$distributions->providing($package, $version)) {
+        $self->info_progress($depth, "Searching distribution for $package");
+        my ($distribution, $reason) = CPAN::Flatten::Distribution::Factory->from_pacakge($package, $version);
+        if ($distribution) {
+            $self->info_done("found @{[$distribution->name]}");
+        } else {
             $miss->{$package}++;
-            $self->info($depth, "Cannot find artifact for $package, $reason");
+            $self->info_done($reason);
             return;
         }
-        $artifacts->add($artifact);
+        $distributions->add($distribution);
         $depth++;
-        for my $dependency (@{$artifact->dependencies}) {
-            $self->_flatten($depth, $miss, $artifacts, $dependency->{package}, $dependency->{version});
+        for my $requirement (@{$distribution->requirements}) {
+            $self->_flatten($depth, $miss, $distributions, $requirement->{package}, $requirement->{version});
         }
     }
     return;
@@ -52,37 +59,36 @@ __END__
 
 =head1 NAME
 
-CPAN::Flatten - flatten cpan module dependencies without install
+CPAN::Flatten - flatten cpan module requirements without install
 
 =head1 SYNOPSIS
 
   $ perl -Ilib script/flatten Moose
-  -> Searching artifact of Moose
-    -> Searching artifact of Module::Runtime
-      -> Searching artifact of Module::Build
-    -> Searching artifact of Data::OptList
-      -> Searching artifact of Params::Util
-      -> Searching artifact of Sub::Install
-    -> Searching artifact of Eval::Closure
-      -> Searching artifact of Try::Tiny
+  -> Searching distribution for Moose, found Moose-2.1405
+    -> Searching distribution for Module::Runtime, found Module-Runtime-0.014
+      -> Searching distribution for Module::Build, found Module-Build-0.4214
+    -> Searching distribution for Data::OptList, found Data-OptList-0.109
+      -> Searching distribution for Params::Util, found Params-Util-1.07
+      -> Searching distribution for Sub::Install, found Sub-Install-0.928
+    -> Searching distribution for Eval::Closure, found Eval-Closure-0.13
   ...
 
 See L<https://gist.github.com/shoichikaji/d24d4c790057c62e23e5> for the whole output.
 
 =head1 DESCRIPTION
 
-This is an experimental.
+This is experimental.
 
-CPAN::Flatten flattens cpan module dependencies without install.
+CPAN::Flatten flattens cpan module requirements without install.
 
 As you know, the cpan world allows cpan modules to configure themselves dynamically.
-So actual dependencies can not be detemined
+So actual requirements can not be detemined
 unless you install them to your local machines.
 
 But, I think dynamic configuration is generally harmful,
 and we should avoid that.
 
-So what happens if we flattens cpan module dependencies without install?
+So what happens if we flattens cpan module requirements without install?
 
 =head1 AUTHOR
 

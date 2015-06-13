@@ -1,9 +1,10 @@
-package CPAN::Flatten::Artifact;
+package CPAN::Flatten::Distribution;
 use strict;
 use warnings;
 use Module::CoreList;
 
-my $core_artifact = CPAN::Flatten::Artifact->new(
+my $core_distribution = CPAN::Flatten::Distribution->new(
+    distfile => undef,
     name => "perl-$^V",
     provides => do {
         my @provides;
@@ -15,11 +16,11 @@ my $core_artifact = CPAN::Flatten::Artifact->new(
         }
         \@provides;
     },
-    dependencies => [],
+    requirements => [],
 );
 
 sub core {
-    return $core_artifact;
+    return $core_distribution;
 }
 
 sub is_core {
@@ -36,16 +37,24 @@ sub provides {
     shift->{provides} || [];
 }
 
-sub dependencies {
-    shift->{dependencies} || [];
+sub requirements {
+    shift->{requirements} || [];
 }
 
 sub name {
-    shift->{name};
+    my $self = shift;
+    return $self->{name} if $self->{name};
+    my $distfile = $self->distfile
+        or return;
+    if ($distfile =~ m{^./../[^/]+/(.+)\.(?:tar\.gz|zip|tgz)$}) {
+        return $1;
+    } else {
+        return;
+    }
 }
 
 sub distfile {
-    shift->name;
+    shift->{distfile};
 }
 
 sub providing {

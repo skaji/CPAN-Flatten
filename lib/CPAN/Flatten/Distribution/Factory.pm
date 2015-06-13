@@ -1,16 +1,16 @@
-package CPAN::Flatten::Artifact::Factory;
+package CPAN::Flatten::Distribution::Factory;
 use strict;
 use warnings;
 use HTTP::Tiny;
 use IO::Socket::SSL;
 use CPAN::Meta::YAML;
 use JSON::PP ();
-use CPAN::Flatten::Artifact;
+use CPAN::Flatten::Distribution;
 
 my $SELF = __PACKAGE__->_new(
     distfile_url => "http://cpanmetadb.plackperl.org/v1.0/package",
     provides_url => "https://cpanmetadb-provides.herokuapp.com/v1.0/provides",
-    dependencies_url => "https://api.metacpan.org/release",
+    requirements_url => "https://api.metacpan.org/release",
     ua => HTTP::Tiny->new(timeout => 10),
 );
 
@@ -29,16 +29,16 @@ sub from_pacakge {
         return unless $need_reason;
         return (undef, "failed to fetch provides for $distfile");
     }
-    my $dependencies = $SELF->fetch_dependencies($distfile);
-    if (!$dependencies) {
+    my $requirements = $SELF->fetch_requirements($distfile);
+    if (!$requirements) {
         return unless $need_reason;
-        return (undef, "failed to fetch dependencies for $distfile");
+        return (undef, "failed to fetch requirements for $distfile");
     }
 
-    CPAN::Flatten::Artifact->new(
-        name => $distfile,
+    CPAN::Flatten::Distribution->new(
+        distfile => $distfile,
         provides => $provides,
-        dependencies => $dependencies,
+        requirements => $requirements,
     );
 }
 
@@ -74,28 +74,28 @@ sub fetch_provides {
 # phase: configure build test runtime develop
 # type:  requires recommends suggests conflicts
 # eg: https://api.metacpan.org/release/MIYAGAWA/Plack-1.0036
-sub fetch_dependencies {
+sub fetch_requirements {
     my ($self, $distfile) = @_;
     $distfile =~ s{^./../}{};
     $distfile =~ s{\.(?:tar\.gz|zip|tgz)$}{};
-    my $res = $self->{ua}->get($self->{dependencies_url} . "/$distfile");
+    my $res = $self->{ua}->get($self->{requirements_url} . "/$distfile");
     return unless $res->{success};
     if (my $json = eval { JSON::PP::decode_json($res->{content}) }) {
-        my $dependencies = $json->{dependency} or return;
+        my $requirements = $json->{dependency} or return;
 
-        for my $dep (@$dependencies) {
-            my $relationship = delete $dep->{relationship}; # requires/suggests...
-            my $module = delete $dep->{module};
-            my $version_numified = delete $dep->{version_numified};
-            $dep->{type} = $relationship;
-            $dep->{package} = $module;
+        for my $requirement (@$requirements) {
+            my $relationship = delete $requirement->{relationship}; # requires/suggests...
+            my $module = delete $requirement->{module};
+            my $version_numified = delete $requirement->{version_numified};
+            $requirement->{type} = $relationship;
+            $requirement->{package} = $module;
         }
 
         my @want = grep { $_->{type} eq "requires" }
                    grep {
-                       my $dep = $_;
-                       !!grep {$dep->{phase} eq $_} qw(configure build runtime);
-                    } @$dependencies;
+                       my $requirement = $_;
+                       !!grep {$requirement->{phase} eq $_} qw(configure build runtime);
+                    } @$requirements;
         return [@want];
     }
     return;

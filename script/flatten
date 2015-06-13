@@ -4,16 +4,10 @@ use utf8;
 use warnings;
 use CPAN::Flatten;
 
-my $package = shift or die "Usage: flatten Pacakge::Name\n";
-
+my $package = shift or die "Usage: flatten Package::Name\n";
 my $flatten = CPAN::Flatten->new;
-
-my $artifacts = $flatten->flatten($package);
-
-print "\n--> Detect the following dependencies:\n";
-for my $artifact (grep !$_->is_core, @$artifacts) {
-    print " ", $artifact->name, "\n";
-}
+my $distributions = $flatten->flatten($package);
+print "\n", $distributions->emit;
 
 __END__
 

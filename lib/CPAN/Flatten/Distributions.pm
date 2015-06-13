@@ -4,7 +4,7 @@ use warnings;
 use CPAN::Flatten::Distribution;
 use CPAN::Flatten::Distributions::Emitter;
 use CPAN::Meta::YAML ();
-use overload '@{}' => sub { shift->{distributions} };
+use overload '@{}' => sub { shift->{distributions} }, fallback => 1;
 
 sub new {
     my ($class, %opt) = @_;

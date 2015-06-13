@@ -74,12 +74,13 @@ sub fetch_requirements {
             $requirement->{package} = $module;
         }
 
-        my @want = grep { $_->{type} eq "requires" }
-                   grep {
-                       my $requirement = $_;
-                       !!grep {$requirement->{phase} eq $_} qw(configure build runtime);
-                    } @$requirements;
-        return [@want];
+        my %priority = (configure => 5, build => 4, runtime => 3);
+        return [
+            sort { $priority{$b->{phase}} <=> $priority{$a->{phase}} }
+            sort { $a->{package} cmp $b->{package} }
+            grep { $priority{$_->{phase}} && $_->{type} eq "requires" }
+            @$requirements
+        ]
     }
     return;
 }

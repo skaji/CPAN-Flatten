@@ -5,7 +5,7 @@ use 5.008_005;
 our $VERSION = '0.01';
 
 use CPAN::Flatten::Distribution::Factory;
-use CPAN::Flatten::Distributions;
+use CPAN::Flatten::Distribution;
 
 sub new {
     my ($class, %opt) = @_;
@@ -23,31 +23,34 @@ sub info_done {
 
 sub flatten {
     my ($self, $package, $version) = @_;
-    my $distributions = CPAN::Flatten::Distributions->new;
+    my $distribution = CPAN::Flatten::Distribution->new;
     my $miss = +{};
-    my $depth = 0;
-    $self->_flatten($depth, $miss, $distributions, $package, $version);
-    wantarray ? ($distributions, $miss) : $distributions;
+    $self->_flatten($distribution, $miss, $package, $version);
+    wantarray ? ($distribution, $miss) : $distribution;
 }
 
+
 sub _flatten {
-    my ($self, $depth, $miss, $distributions, $package, $version) = @_;
+    my ($self, $distribution, $miss, $package, $version) = @_;
     return if $miss->{$package};
-    if (!$distributions->providing($package, $version)) {
-        $self->info_progress($depth, "Searching distribution for $package");
-        my ($distribution, $reason) = CPAN::Flatten::Distribution::Factory->from_pacakge($package, $version);
-        if ($distribution) {
-            $self->info_done("found @{[$distribution->name]}");
-        } else {
-            $miss->{$package}++;
-            $self->info_done($reason);
-            return;
-        }
-        $distributions->add($distribution);
-        $depth++;
-        for my $requirement (@{$distribution->requirements}) {
-            $self->_flatten($depth, $miss, $distributions, $requirement->{package}, $requirement->{version});
-        }
+    return if CPAN::Flatten::Distribution->is_core($package, $version);
+    my $already = $distribution->root->providing($package, $version);
+    if ($already) {
+        $distribution->add_child( $already->dummy );
+        return;
+    }
+
+    $self->info_progress($distribution->depth, "Searching distribution for $package");
+    my ($found, $reason) = CPAN::Flatten::Distribution::Factory->from_pacakge($package, $version);
+    if (!$found) {
+        $miss->{$package}++;
+        $self->info_done($reason);
+        return;
+    }
+    $self->info_done("found @{[$found->distfile]}");
+    $distribution->add_child($found);
+    for my $requirement (@{$found->requirements}) {
+        $self->_flatten($found, $miss, $requirement->{package}, $requirement->{version});
     }
     return;
 }

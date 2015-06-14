@@ -2,35 +2,18 @@ package CPAN::Flatten::Distribution;
 use strict;
 use warnings;
 use Module::CoreList;
+use CPAN::Flatten::Distribution::Emitter;
 
-my $core_distribution = CPAN::Flatten::Distribution->new(
-    distfile => undef,
-    name => "perl-$^V",
-    provides => do {
-        my @provides;
-        for my $package (sort keys %{$Module::CoreList::version{$]}}) {
-            push @provides, {
-                package => $package,
-                version => $Module::CoreList::version{$]}{$package},
-            };
-        }
-        \@provides;
-    },
-    requirements => [],
-);
+use parent 'CPAN::Flatten::Tree';
 
-sub core {
-    return $core_distribution;
+sub is_dummy {
+    shift->{dummy};
 }
 
-sub is_core {
+sub dummy {
     my $self = shift;
-    return $self->name eq "perl-$^V";
-}
-
-sub new {
-    my ($class, %opt) = @_;
-    bless {%opt}, $class;
+    my $class = ref $self;
+    $class->new(distfile => $self->distfile, dummy => 1);
 }
 
 sub provides {
@@ -41,29 +24,42 @@ sub requirements {
     shift->{requirements} || [];
 }
 
-sub name {
-    my $self = shift;
-    return $self->{name} if $self->{name};
-    my $distfile = $self->distfile
-        or return;
-    if ($distfile =~ m{^./../[^/]+/(.+)\.(?:tar\.gz|zip|tgz|tar\.bz2)$}) {
-        return $1;
-    } else {
-        return;
-    }
-}
-
 sub distfile {
     shift->{distfile};
 }
 
+sub is_core {
+    my ($self, $package, $version) = @_;
+    return 1 if $package eq "perl";
+    return 1 if exists $Module::CoreList::version{$]}{$package};
+    return;
+}
+
+use constant STOP => -1;
+
 sub providing {
     my ($self, $package, $version) = @_;
-    my $provides = $self->provides;
-    for my $provide (@$provides) {
-        return 1 if $provide->{package} eq $package;
+
+    my $providing;
+    $self->walk_down(sub {
+        my ($node, $depth) = @_;
+        $providing = $node->_providing_by_myself($package, $version);
+        return STOP if $providing;
+    });
+    return $providing;
+}
+
+sub _providing_by_myself {
+    my ($self, $package, $version) = @_;
+    for my $provide (@{$self->provides}) {
+        return $self if $provide->{package} eq $package;
     }
     return;
+}
+
+sub emit {
+    my ($self, $fh) = @_;
+    CPAN::Flatten::Distribution::Emitter->emit($self, $fh);
 }
 
 1;

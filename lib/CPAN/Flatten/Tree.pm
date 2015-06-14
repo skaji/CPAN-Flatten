@@ -27,6 +27,23 @@ sub add_child {
     $self;
 }
 
+sub is_child {
+    my ($self, $that) = @_;
+    for my $child ($self->children) {
+        return 1 if $child->equals($that);
+    }
+    return;
+}
+
+sub is_sister {
+    my ($self, $that) = @_;
+    return if $self->is_root;
+    for my $sister ($self->parent->children) {
+        return 1 if $sister->equals($that);
+    }
+    return;
+}
+
 sub children {
     my ($self, $filter) = @_;
     my @children = @{$self->{_children}};
@@ -81,6 +98,11 @@ sub uid {
     my $self = shift;
     my ($uid) = ("$self" =~ /\((.*?)\)$/);
     $uid;
+}
+
+sub equals {
+    my ($self, $that) = @_;
+    $self->uid eq $that->uid;
 }
 
 1;

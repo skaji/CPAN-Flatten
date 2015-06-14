@@ -32,12 +32,13 @@ sub flatten {
 
 sub _flatten {
     my ($self, $distribution, $miss, $package, $version) = @_;
-    return if $miss->{$package};
-    return if CPAN::Flatten::Distribution->is_core($package, $version);
+    return 0 if $miss->{$package};
+    return 0 if CPAN::Flatten::Distribution->is_core($package, $version);
     my $already = $distribution->root->providing($package, $version);
     if ($already) {
+        return 0 if $distribution->is_child($already);
         $distribution->add_child( $already->dummy );
-        return;
+        return 1;
     }
 
     $self->info_progress($distribution->depth, "Searching distribution for $package");
@@ -45,14 +46,16 @@ sub _flatten {
     if (!$found) {
         $miss->{$package}++;
         $self->info_done($reason);
-        return;
+        return 0;
     }
     $self->info_done("found @{[$found->distfile]}");
     $distribution->add_child($found);
+    my $c = 0;
     for my $requirement (@{$found->requirements}) {
-        $self->_flatten($found, $miss, $requirement->{package}, $requirement->{version});
+        $c += $self->_flatten($found, $miss, $requirement->{package}, $requirement->{version});
     }
-    return;
+    $self->info_progress($distribution->depth, "\e[32m[LEAF]\e[m ". $found->distfile . "\n") if $c == 0;
+    return 1;
 }
 
 1;

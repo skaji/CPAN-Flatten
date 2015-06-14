@@ -62,4 +62,9 @@ sub emit {
     CPAN::Flatten::Distribution::Emitter->emit($self, $fh);
 }
 
+sub equals {
+    my ($self, $that) = @_;
+    $self->distfile && $that->distfile and $self->distfile eq $that->distfile;
+}
+
 1;

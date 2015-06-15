@@ -28,6 +28,13 @@ sub distfile {
     shift->{distfile};
 }
 
+sub name {
+    my $distfile = shift->distfile or return;
+    $distfile =~ s{^./../}{};
+    $distfile =~ s{\.(?:tar\.gz|zip|tgz|tar\.bz2)$}{};
+    $distfile;
+}
+
 sub is_core {
     my ($self, $package, $version) = @_;
     return 1 if $package eq "perl";

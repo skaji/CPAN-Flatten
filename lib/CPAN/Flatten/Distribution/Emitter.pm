@@ -28,7 +28,7 @@ sub emit {
             $self->print(0, $dist->distfile);
             $self->print(1, $_->distfile) for @children;
         } else {
-            $self->print(0, $dist->distfile . " (leaf)");
+            $self->print(0, $dist->distfile . " \e[32m(leaf)\e[m");
         }
     });
 }

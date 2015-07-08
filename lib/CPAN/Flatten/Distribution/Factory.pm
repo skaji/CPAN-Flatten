@@ -8,7 +8,7 @@ use JSON::PP ();
 use CPAN::Flatten::Distribution;
 
 my $SELF = __PACKAGE__->_new(
-    distfile_url => "https://cpanmetadb-provides.herokuapp.com/v1.1/package",
+    distfile_url => "https://cpanmetadb-provides.herokuapp.com/v1.2/package",
     ua => HTTP::Tiny->new(timeout => 10),
 );
 

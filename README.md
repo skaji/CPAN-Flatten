@@ -46,13 +46,9 @@ So what happens if we flattens cpan module requirements without install?
 
 Shoichi Kaji <skaji@cpan.org>
 
-# COPYRIGHT
+# COPYRIGHT AND LICENSE
 
-Copyright 2015- Shoichi Kaji
-
-# LICENSE
+Copyright 2016 Shoichi Kaji <skaji@cpan.org>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-
-# SEE ALSO

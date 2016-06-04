@@ -2,13 +2,12 @@ package CPAN::Flatten::Distribution::Factory;
 use strict;
 use warnings;
 use HTTP::Tiny;
-use IO::Socket::SSL;
 use CPAN::Meta::YAML;
 use JSON::PP ();
 use CPAN::Flatten::Distribution;
 
 my $SELF = __PACKAGE__->_new(
-    distfile_url => "https://cpanmetadb-provides.herokuapp.com/v1.2/package",
+    distfile_url => "http://cpanmetadb-provides.herokuapp.com/v1.2/package",
     ua => HTTP::Tiny->new(timeout => 10),
 );
 

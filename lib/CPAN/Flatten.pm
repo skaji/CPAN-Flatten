@@ -107,17 +107,13 @@ So what happens if we flattens cpan module requirements without install?
 
 =head1 AUTHOR
 
-Shoichi Kaji E<lt>skaji@cpan.orgE<gt>
+Shoichi Kaji <skaji@cpan.org>
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT AND LICENSE
 
-Copyright 2015- Shoichi Kaji
-
-=head1 LICENSE
+Copyright 2016 Shoichi Kaji <skaji@cpan.org>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-
-=head1 SEE ALSO
 
 =cut

@@ -39,7 +39,6 @@
          "requires" : {
             "CPAN::Meta::YAML" : "0",
             "HTTP::Tiny" : "0",
-            "JSON::PP" : "0",
             "Module::CoreList" : "0",
             "parent" : "0",
             "perl" : "5.008005"

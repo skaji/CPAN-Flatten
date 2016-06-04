@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use HTTP::Tiny;
 use CPAN::Meta::YAML;
-use JSON::PP ();
 use CPAN::Flatten::Distribution;
 
 my $SELF = __PACKAGE__->_new(

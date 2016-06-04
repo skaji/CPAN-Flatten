@@ -22,7 +22,6 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "CPAN::Meta::YAML" => 0,
     "HTTP::Tiny" => 0,
-    "JSON::PP" => 0,
     "Module::CoreList" => 0,
     "parent" => 0
   },
@@ -39,7 +38,6 @@ my %WriteMakefileArgs = (
 my %FallbackPrereqs = (
   "CPAN::Meta::YAML" => 0,
   "HTTP::Tiny" => 0,
-  "JSON::PP" => 0,
   "Module::CoreList" => 0,
   "Test::More" => "0.96",
   "parent" => 0

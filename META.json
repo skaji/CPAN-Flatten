@@ -41,7 +41,8 @@
             "HTTP::Tiny" : "0",
             "Module::CoreList" : "0",
             "parent" : "0",
-            "perl" : "5.008005"
+            "perl" : "5.008005",
+            "version" : "0"
          }
       },
       "test" : {
@@ -62,6 +63,7 @@
          "web" : "https://github.com/skaji/CPAN-Flatten"
       }
    },
-   "version" : "0.01"
+   "version" : "0.01",
+   "x_static_install" : "1"
 }
 

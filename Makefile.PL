@@ -23,7 +23,8 @@ my %WriteMakefileArgs = (
     "CPAN::Meta::YAML" => 0,
     "HTTP::Tiny" => 0,
     "Module::CoreList" => 0,
-    "parent" => 0
+    "parent" => 0,
+    "version" => 0
   },
   "TEST_REQUIRES" => {
     "Test::More" => "0.96"
@@ -40,7 +41,8 @@ my %FallbackPrereqs = (
   "HTTP::Tiny" => 0,
   "Module::CoreList" => 0,
   "Test::More" => "0.96",
-  "parent" => 0
+  "parent" => 0,
+  "version" => 0
 );
 
 

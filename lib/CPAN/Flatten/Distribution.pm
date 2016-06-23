@@ -35,13 +35,6 @@ sub name {
     $distfile;
 }
 
-sub is_core {
-    my ($self, $package, $version) = @_;
-    return 1 if $package eq "perl";
-    return 1 if exists $Module::CoreList::version{$]}{$package};
-    return;
-}
-
 use constant STOP => -1;
 
 sub providing {

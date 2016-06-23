@@ -24,12 +24,8 @@ sub emit {
         return if $dist->is_root;
         return if $dist->is_dummy;
         my @children = $dist->children;
-        if (@children) {
-            $self->print(0, $dist->distfile);
-            $self->print(1, $_->distfile) for @children;
-        } else {
-            $self->print(0, $dist->distfile . " \e[32m(leaf)\e[m");
-        }
+        $self->print(0, $dist->distfile);
+        $self->print(1, $_->distfile) for @children;
     });
 }
 

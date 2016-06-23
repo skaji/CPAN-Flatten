@@ -10,7 +10,6 @@ my $SELF = __PACKAGE__->_new(
     ua => HTTP::Tiny->new(timeout => 10),
 );
 
-
 sub from_pacakge {
     my ($class, $package, $version) = @_;
     my $need_reason = wantarray;

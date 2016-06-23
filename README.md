@@ -4,28 +4,27 @@ CPAN::Flatten - flatten cpan module requirements without install
 
 # SYNOPSIS
 
-    $ perl -Ilib script/flatten Moo
-    -> Searching distribution for Moo, found HAARG/Moo-2.000001
-      -> Searching distribution for Class::Method::Modifiers, found ETHER/Class-Method-Modifiers-2.11
-      -> Searching distribution for Devel::GlobalDestruction, found HAARG/Devel-GlobalDestruction-0.13
-        -> Searching distribution for Sub::Exporter::Progressive, found FREW/Sub-Exporter-Progressive-0.001011
-      -> Searching distribution for Module::Runtime, found ZEFRAM/Module-Runtime-0.014
-        -> Searching distribution for Module::Build, found LEONT/Module-Build-0.4214
-      -> Searching distribution for Role::Tiny, found HAARG/Role-Tiny-2.000001
+    $ flatten --target-perl 5.10.1 --verbose Mojolicious
+    Mojolicious (0) -> SRI/Mojolicious-6.66
+      ExtUtils::MakeMaker (0) -> core
+      ExtUtils::MakeMaker (0) -> core
+      IO::Socket::IP (0.37) -> PEVANS/IO-Socket-IP-0.37
+        Test::More (0.88) -> core
+        IO::Socket (0) -> core
+        Socket (1.97) -> core
+      JSON::PP (2.27103) -> MAKAMAKA/JSON-PP-2.27400
+        ExtUtils::MakeMaker (0) -> core
+        ExtUtils::MakeMaker (0) -> core
+        Test::More (0) -> core
+      Pod::Simple (3.09) -> core
+      Time::Local (1.2) -> core
+      perl (5.010001) -> core
 
-    H/HA/HAARG/Moo-2.000001.tar.gz
-      E/ET/ETHER/Class-Method-Modifiers-2.11.tar.gz
-      H/HA/HAARG/Devel-GlobalDestruction-0.13.tar.gz
-      Z/ZE/ZEFRAM/Module-Runtime-0.014.tar.gz
-      H/HA/HAARG/Role-Tiny-2.000001.tar.gz
-    E/ET/ETHER/Class-Method-Modifiers-2.11.tar.gz (leaf)
-    H/HA/HAARG/Devel-GlobalDestruction-0.13.tar.gz
-      F/FR/FREW/Sub-Exporter-Progressive-0.001011.tar.gz
-    F/FR/FREW/Sub-Exporter-Progressive-0.001011.tar.gz (leaf)
-    Z/ZE/ZEFRAM/Module-Runtime-0.014.tar.gz
-      L/LE/LEONT/Module-Build-0.4214.tar.gz
-    L/LE/LEONT/Module-Build-0.4214.tar.gz (leaf)
-    H/HA/HAARG/Role-Tiny-2.000001.tar.gz (leaf)
+    S/SR/SRI/Mojolicious-6.66.tar.gz
+      P/PE/PEVANS/IO-Socket-IP-0.37.tar.gz
+      M/MA/MAKAMAKA/JSON-PP-2.27400.tar.gz
+    P/PE/PEVANS/IO-Socket-IP-0.37.tar.gz
+    M/MA/MAKAMAKA/JSON-PP-2.27400.tar.gz
 
 # DESCRIPTION
 
@@ -34,7 +33,7 @@ This is experimental.
 CPAN::Flatten flattens cpan module requirements without install.
 
 As you know, the cpan world allows cpan modules to configure themselves dynamically.
-So actual requirements can not be determined
+So the actual requirements can not be determined
 unless you install them to your local machines.
 
 But, I think dynamic configuration is generally harmful,

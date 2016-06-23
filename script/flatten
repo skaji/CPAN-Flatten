@@ -1,24 +1,45 @@
 #!/usr/bin/perl
 use strict;
-use utf8;
 use warnings;
-use CPAN::Flatten;
+use CPAN::Flatten::CLI;
 
-my $package = shift or die "Usage: flatten Package::Name\n";
-my $flatten = CPAN::Flatten->new;
-my $distributions = $flatten->flatten($package);
-print STDERR "\n";
-$distributions->emit(\*STDOUT);
+CPAN::Flatten::CLI->run(@ARGV);
 
 __END__
 
+=head1 NAME
+
+flatten - flatten cpan module requirements without install
+
 =head1 SYNOPSIS
 
-  > flatten Package::Name
+  $ flatten Package::Name
 
-=head1 DESCRIPTION
+=head1 OPTIONS
 
-TBD
+=over 4
+
+=item -q, --quiet
+
+be quiet
+
+=item -v, --verbose
+
+more verbose messages (show core requirements)
+
+=item --target-perl VERSION
+
+flatten requirements as if your perl version is VERSION
+
+=item -h, --help
+
+show help
+
+=item --version
+
+show version
+
+=back
 
 =head1 AUTHOR
 

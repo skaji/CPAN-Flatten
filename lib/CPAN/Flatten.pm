@@ -6,14 +6,14 @@ our $VERSION = '0.01';
 
 use CPAN::Flatten::Distribution::Factory;
 use CPAN::Flatten::Distribution;
+use CPAN::Flatten::version;
 use Module::CoreList;
-use version;
 
 sub new {
     my ($class, %opt) = @_;
     my $target_perl = delete $opt{target_perl} || $];
     $target_perl = "v$target_perl" if $target_perl =~ /^5\.[1-9]\d*$/;
-    $target_perl = version->parse($target_perl)->numify;
+    $target_perl = CPAN::Flatten::version->parse($target_perl)->numify;
     bless {target_perl => $target_perl, %opt}, $class;
 }
 sub target_perl { shift->{target_perl} }
@@ -22,18 +22,20 @@ sub is_core {
     my ($self, $package, $version) = @_;
     $version ||= 0;
     if ($package eq "perl") {
-        if ($version > $self->target_perl) {
+        if (CPAN::Flatten::version->new($self->target_perl)->satisfy($version)) {
+            return (1, undef);
+        } else {
             my $err = "target perl version is only @{[$self->target_perl]}";
             return (undef, $err);
-        } else {
-            return (1, undef);
         }
     }
     if (exists $Module::CoreList::version{$self->target_perl}{$package}) {
-        return (1, undef);
-    } else {
-        return (0, undef);
+        my $v = $Module::CoreList::version{$self->target_perl}{$package};
+        if (CPAN::Flatten::version->new($v)->satisfy($version)) {
+            return (1, undef);
+        }
     }
+    return (0, undef);
 }
 
 sub info_progress {

@@ -20,6 +20,7 @@ my %WriteMakefileArgs = (
   "MIN_PERL_VERSION" => "5.008005",
   "NAME" => "CPAN::Flatten",
   "PREREQ_PM" => {
+    "CPAN::Meta::Requirements" => 0,
     "CPAN::Meta::YAML" => 0,
     "HTTP::Tiny" => 0,
     "Module::CoreList" => 0,
@@ -37,6 +38,7 @@ my %WriteMakefileArgs = (
 
 
 my %FallbackPrereqs = (
+  "CPAN::Meta::Requirements" => 0,
   "CPAN::Meta::YAML" => 0,
   "HTTP::Tiny" => 0,
   "Module::CoreList" => 0,
